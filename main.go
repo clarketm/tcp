@@ -30,6 +30,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/clarketm/tcp/utils"
 	flag "github.com/spf13/pflag"
@@ -75,10 +76,23 @@ func printVersion() {
 
 // main ()
 func main() {
-	flag.Parse()
+	// flag.Parse()
 
-	if version {
-		printVersion() // version and EXIT
-	}
+	// if version {
+	// printVersion() // version and EXIT
+	// }
+
+	// Mac - lsof -i tcp | grep -i "listen"
+	lsof := exec.Command("lsof", "-i", "tcp")
+	grep := exec.Command("grep", "-i", "listen", "--color=always")
+	grep.Stdin, _ = lsof.StdoutPipe()
+	grep.Stdout = os.Stdout
+	_ = grep.Start()
+	_ = lsof.Run()
+	_ = lsof.Wait()
+
+	// Linux - TODO
+
+	// Windows - TODO
 
 }
